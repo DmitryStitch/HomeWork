@@ -1,5 +1,5 @@
 my_string = input('Добрый день, \nЧем Вы любите заниматься? ')
-print(len('Чем Вы любите заниматься?'))
+print(len(my_string))
 print(my_string.upper())
 print(my_string.lower())
 print(my_string.replace(' ',''))
