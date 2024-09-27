@@ -8,8 +8,9 @@ class Iterator:
         self.stop = stop
         self.step = step
         self.pointer = start
+
         if step == 0:
-            print(StepValueError('шаг не может быть равен 0'))
+            raise StepValueError
 
 
     def __iter__(self):
@@ -19,16 +20,16 @@ class Iterator:
     def __next__(self):
         if (self.step > 0 and self.pointer >= self.stop) or (self.step < 0 and self.pointer <= self.stop):
             raise StopIteration
-        self.pointer += self.step
-        return self.pointer - self.step
-        raise StopIteration
 
+        current_value = self.pointer
+        self.pointer += self.step
+        return current_value
 
 try:
     iter1 = Iterator(100, 200, 0)
     for i in iter1:
         print(i, end=' ')
-        break
+
 except StepValueError:
     print('Шаг указан неверно')
 
