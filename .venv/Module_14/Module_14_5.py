@@ -11,7 +11,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from crud_functions import initiate_db, get_all_products, add_user, is_included
 initiate_db()
 
-api = "8190268705:AAEvLMdJ0uj_6LJ7Pm8oXWH4duV4Sxe7Ar4"
+api = ""
 bot = Bot(token=api)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
