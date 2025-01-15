@@ -1,27 +1,36 @@
-from fastapi import FastAPI, Path
-from typing import Annotated
+from fastapi import FastAPI, Path, HTTPException
+from typing import Annotated, Dict
 
 app = FastAPI()
 
-users = {'1': 'Имя: Example, возраст: 18'}
+users: Dict[int, str] = {'1': 'Имя: Example, возраст: 18'}
 
 @app.get("/users")
-async def get_all_users() -> dict:
+async def get_all_users():
     return users
 
 @app.post("/user/{username}/{age}")
-async def create_user(username: str, age: int) -> dict:
-    current_index = str(int(max(users, key=int)) + 1)
-    users[current_index] = f"Имя: {username}, возраст: {age}"
-    return {"user_id": current_index, "message": f"User {current_index} is registered"}
+async def create_user(
+        username:Annotated[str, Path(min_length=5, max_length=20, description="Enter username")],
+        age:Annotated[int, Path(ge=18, le=120, description="Enter age", example="75")],):
+        next_id = str(int(max(users.keys())) + 1)
+        users[next_id] = f"Имя: {username}, возраст: {age}"
+        return {"message": f"User {next_id} is registered"}
 
 @app.put("/user/{user_id}/{username}/{age}")
-async def update_user(user_id: str, username: str, age: int) -> dict:
-    users[user_id] = f"Имя: {username}, возраст: {age}"
-    return {"user_id": user_id, "message": f"The user {user_id} is updated"}
+async def update_user(
+        user_id:Annotated[int, Path(ge=1, le=100, description="Enter User ID", example="10")],
+        username:Annotated[str, Path(min_length=5, max_length=20, description="Enter username")],
+        age:Annotated[int, Path(ge=18, le=120, description="Enter age", example="75")],):
+        if str(user_id) not in users:
+            raise HTTPException(status_code=404, detail="User not found")
+        users[str(user_id)] = f"Имя: {username}, возраст: {age}"
+        return {"message": f"The user {user_id} is updated"}
 
 @app.delete("/user/{user_id}")
-async def delete_user(user_id: str) -> dict:
-    del users[user_id]
-    return {"user_id": user_id, "message": f"User {user_id} was deleted."}
+async def delete_user(user_id:Annotated[int, Path(ge=1, le=100, description="Enter User ID", example="10")]):
+    if str(user_id) not in users:
+        raise HTTPException(status_code=404, detail="User not found")
+    del users[str(user_id)]
+    return {"message": f"User {user_id} was deleted."}
 
